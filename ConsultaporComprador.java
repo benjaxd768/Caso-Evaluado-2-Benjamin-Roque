@@ -4,62 +4,36 @@
  */
 package casoevaluado2benjaminroque;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author benja
  */
-public class Boleto {
+public class ConsultaporComprador {
 
-    //Defini variables para obtener el numero del comprador y el nombre, un verdadero o falso de si el boleto esta disponible
-    private int numero;
-    private boolean disponible;
-    private String comprador;
-    private String telefonoComprador;
+    //Loop para buscar los boletos que ha comprado el comprador 
+    public void consultarComprador(Boleto[][] boletos) {
+        String dato = JOptionPane.showInputDialog(
+                "Digite el nombre o teléfono del comprador:");
+        String texto = "Boletos:\n\n";
+        int encontrados = 0;
 
-    //Constructores setters y getters
-    public Boleto(int numero) {
-        this.numero = numero;
-        disponible = true;
-        comprador = "";
-        telefonoComprador = "";
+        for (int fila = 0; fila < boletos.length; fila++) {
+            for (int columna = 0; columna < boletos[fila].length; columna++) {
+                Boleto boleto = boletos[fila][columna];
+                if (!boleto.isDisponible()
+                        && (boleto.getComprador().equalsIgnoreCase(dato)
+                        || boleto.getTelefonoComprador().equals(dato))) {
+                    texto += boleto.getNumero() + " ";
+                    encontrados++;
+                }
+            }
+        }
+
+        if (encontrados == 0) {
+            texto = "El comprador no tiene boletos.";
+        }
+        JOptionPane.showMessageDialog(null, texto);
     }
-
-    public void vender(String nombre, String telefono) {
-        comprador = nombre;
-        telefono = telefonoComprador;
-        disponible = false;
-    }
-
-    public int getNumero() {
-        return numero;
-    }
-
-    public void setNumero(int numero) {
-        this.numero = numero;
-    }
-
-    public boolean isDisponible() {
-        return disponible;
-    }
-
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
-
-    public String getComprador() {
-        return comprador;
-    }
-
-    public void setComprador(String comprador) {
-        this.comprador = comprador;
-    }
-
-    public String getTelefonoComprador() {
-        return telefonoComprador;
-    }
-
-    public void setTelefonoComprador(String telefonoComprador) {
-        this.telefonoComprador = telefonoComprador;
-    }
-
 }

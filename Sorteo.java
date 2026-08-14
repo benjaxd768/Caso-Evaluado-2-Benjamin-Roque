@@ -11,67 +11,48 @@ import javax.swing.JOptionPane;
  *
  * @author benja
  */
-public class GalloTapado {
+public class Sorteo {
 
-    private int rifaTodos;
-    private int rifaMayor;
-    private int primeraVariable = 20;
     private Random aleatorio = new Random();
 
-    public void comprarAleatorios(Boleto[][] boletos) {
-        calcularVariables(boletos);
-        int cantidad = Integer.parseInt(JOptionPane.showInputDialog(
-                "¿Cuántos boletos desea comprar?"));
-        int disponibles = contarDisponibles(boletos);
+    public void realizarSorteo(Boleto[][] boletos) {
+        int[] ganadores = new int[3];
 
-        if (cantidad <= 0 || cantidad > disponibles) {
-            JOptionPane.showMessageDialog(null,
-                    "Cantidad incorrecta. Disponibles: " + disponibles);
-        } else {
-            String nombre = JOptionPane.showInputDialog("Nombre del comprador:");
-            String telefono = JOptionPane.showInputDialog("Teléfono del comprador:");
-            String asignados = "Números asignados: ";
-            int vendidos = 0;
-
-            while (vendidos < cantidad) {
-                int numero = aleatorio.nextInt(100);
-                Boleto boleto = buscarBoleto(boletos, numero);
-                if (boleto.isDisponible()) {
-                    boleto.vender(nombre, telefono);
-                    asignados += numero + " ";
-                    vendidos++;
+        for (int i = 0; i < ganadores.length; i++) {
+            boolean repetido;
+            do {
+                ganadores[i] = aleatorio.nextInt(100);
+                repetido = false;
+                for (int j = 0; j < i; j++) {
+                    if (ganadores[i] == ganadores[j]) {
+                        repetido = true;
+                    }
                 }
-            }
-            JOptionPane.showMessageDialog(null, asignados);
+            } while (repetido);
         }
-    }
 
-    public void calcularVariables(Boleto[][] boletos) {
-        rifaTodos = 0;
-        rifaMayor = 0;
-        for (int fila = 0; fila < boletos.length; fila++) {
-            for (int columna = 0; columna < boletos[fila].length; columna++) {
-                if (boletos[fila][columna].isDisponible()) {
-                    rifaTodos += 2000;
-                    rifaMayor += boletos[fila][columna].getNumero();
-                }
+        String[] premios = {"Primer lugar", "Segundo lugar", "Tercer lugar"};
+        String texto = "Resultado del sorteo\n\n";
+
+        for (int i = 0; i < ganadores.length; i++) {
+            Boleto boleto = boletos[ganadores[i] / 10][ganadores[i] % 10];
+            texto += premios[i] + " - Número " + ganadores[i] + "\n";
+            if (boleto.isDisponible()) {
+                texto += "Premio desierto.\n\n";
+            } else {
+                texto += "Ganador: " + boleto.getComprador()
+                        + "\nTeléfono: " + boleto.getTelefonoComprador() + "\n\n";
             }
         }
+        JOptionPane.showMessageDialog(null, texto);
     }
 
-    public int contarDisponibles(Boleto[][] boletos) {
-        int cantidad = 0;
-        for (int fila = 0; fila < boletos.length; fila++) {
-            for (int columna = 0; columna < boletos[fila].length; columna++) {
-                if (boletos[fila][columna].isDisponible()) {
-                    cantidad++;
-                }
-            }
-        }
-        return cantidad;
+    public Random getAleatorio() {
+        return aleatorio;
     }
 
-    public Boleto buscarBoleto(Boleto[][] boletos, int numero) {
-        return boletos[numero / 10][numero % 10];
+    public void setAleatorio(Random aleatorio) {
+        this.aleatorio = aleatorio;
     }
+
 }

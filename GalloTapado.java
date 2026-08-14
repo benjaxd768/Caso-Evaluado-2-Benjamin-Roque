@@ -4,36 +4,74 @@
  */
 package casoevaluado2benjaminroque;
 
+import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author benja
  */
-public class ConsultaporComprador {
+public class GalloTapado {
 
-    //Loop para buscar los boletos que ha comprado el comprador 
-    public void consultarComprador(Boleto[][] boletos) {
-        String dato = JOptionPane.showInputDialog(
-                "Digite el nombre o teléfono del comprador:");
-        String texto = "Boletos:\n\n";
-        int encontrados = 0;
+    private int rifaTodos;
+    private int rifaMayor;
+    private int primeraVariable = 20;
+    private Random aleatorio = new Random();
 
+    public void comprarAleatorios(Boleto[][] boletos) {
+        calcularVariables(boletos);
+        int cantidad = Integer.parseInt(JOptionPane.showInputDialog(
+                "¿Cuántos boletos desea comprar?"));
+        int disponibles = contarDisponibles(boletos);
+
+        if (cantidad <= 0 || cantidad > disponibles) {
+            JOptionPane.showMessageDialog(null,
+                    "Cantidad incorrecta. Disponibles: " + disponibles);
+        } else {
+            String nombre = JOptionPane.showInputDialog("Nombre del comprador:");
+            String telefono = JOptionPane.showInputDialog("Teléfono del comprador:");
+            String asignados = "Números asignados: ";
+            int vendidos = 0;
+
+            while (vendidos < cantidad) {
+                int numero = aleatorio.nextInt(100);
+                Boleto boleto = buscarBoleto(boletos, numero);
+                if (boleto.isDisponible()) {
+                    boleto.vender(nombre, telefono);
+                    asignados += numero + " ";
+                    vendidos++;
+                }
+            }
+            JOptionPane.showMessageDialog(null, asignados);
+        }
+    }
+
+    public void calcularVariables(Boleto[][] boletos) {
+        rifaTodos = 0;
+        rifaMayor = 0;
         for (int fila = 0; fila < boletos.length; fila++) {
             for (int columna = 0; columna < boletos[fila].length; columna++) {
-                Boleto boleto = boletos[fila][columna];
-                if (!boleto.isDisponible()
-                        && (boleto.getComprador().equalsIgnoreCase(dato)
-                        || boleto.getTelefonoComprador().equals(dato))) {
-                    texto += boleto.getNumero() + " ";
-                    encontrados++;
+                if (boletos[fila][columna].isDisponible()) {
+                    rifaTodos += 2000;
+                    rifaMayor += boletos[fila][columna].getNumero();
                 }
             }
         }
+    }
 
-        if (encontrados == 0) {
-            texto = "El comprador no tiene boletos.";
+    public int contarDisponibles(Boleto[][] boletos) {
+        int cantidad = 0;
+        for (int fila = 0; fila < boletos.length; fila++) {
+            for (int columna = 0; columna < boletos[fila].length; columna++) {
+                if (boletos[fila][columna].isDisponible()) {
+                    cantidad++;
+                }
+            }
         }
-        JOptionPane.showMessageDialog(null, texto);
+        return cantidad;
+    }
+
+    public Boleto buscarBoleto(Boleto[][] boletos, int numero) {
+        return boletos[numero / 10][numero % 10];
     }
 }
